@@ -1,0 +1,216 @@
+body {
+	background: #fff;
+	margin:0px;
+	font-family: 'Open Sans', sans-serif;
+	/*cursor:none;*/
+}
+.top {
+	overflow: auto;
+	background-color: #f08519;
+	width: auto;
+	height: auto;
+	font-weight: bold;
+	text-align: center;
+}
+.top-border {
+	float: left;
+	background-color: #f08519;
+	width: 240px;
+	height: auto;
+	margin-left: 160px;
+	border-right: 5px solid #fff;
+	color: #fff;
+	padding: 25px 0px 25px;
+	text-align: center;
+}
+.logo {
+	width: 140px;
+	height: 95px;
+	position: absolute;
+  	left: 0px;
+  	top: 0px;
+  	z-index: 1;
+}
+.top-nameBrand {
+	font-size: 30pt;
+	padding: auto;
+	color: #fff;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+.top-material {
+	float: right;
+	width: auto;
+	font-size: 18pt;
+	text-align: center;
+	padding: auto;
+	color: #fff;
+	margin: 10px 15px 3px;
+}
+.top-materialName {
+	float: right;
+	font-size: 30pt;
+	padding: auto;
+	text-align: center;
+	margin-top: 35px;
+	color: #fff;
+	margin-right: 10px;
+}
+.middle-top {
+	overflow: auto;
+	background-color: #fff;
+	width: 100%;
+	height: auto;
+	margin-top: 5px;
+	padding: 0px;
+	font-weight: bold;
+}
+.weight-target {
+	float: left;
+	padding:5px;
+	background-color: #00ff01;
+	color: #30318b;
+	width: 390px;
+	height: auto;
+	margin-bottom: 5px;
+}
+.weight-font-target {
+	color: #342c2a;
+	width: auto;
+	font-size: 18pt;
+	padding: auto;
+	margin-left: 20px;
+	margin-top: 10px;
+}
+.weight-num-target {
+	float: left;
+	background-color: #00ff01;
+	color: #30318b;
+	font-size: 65pt;
+	margin-left: 40px;
+}
+.unit-target {
+	float: left;
+	color: #30318b;
+	width: auto;
+	font-size: 25pt;
+	margin-left: 10px;
+	margin-top:80px;
+}
+.weight-aktual {
+	float: right;
+	background-color: #fff;
+	color: #342c2a;
+	width: 375px;
+	margin-bottom:5px;
+	padding:5px;
+}
+.weight-font-aktual {
+	color: #342c2a;
+	width: auto;
+	text-align: right;
+	font-size: 18pt;
+	padding: auto;
+	margin-right: 20px;
+	margin-top: 10px;
+}
+.weight-num-aktual {
+	float: left;
+	color: #342c2a;
+	font-size: 65pt;
+	padding: 0px 15px 0px;
+	margin-left: 50px;
+}
+.unit-aktual {
+	float: right;
+	color: #342c2a;
+	width: auto;
+	font-size: 25pt;
+	margin-right: 35px;
+	margin-top:80px;
+}
+.middle-bottom {
+	overflow: auto;
+	background-color: #00a2ea;
+	max-width: 100%;
+	height: auto;
+	color: #fff;
+	font-weight: bold;
+	padding: 10px;
+	margin-bottom:5px;
+}
+.command {
+	padding: 10px 10px 0px;
+	font-size: 18pt;
+}
+.command-content {
+	padding: 0px 10px 10px;
+	font-size: 20pt;
+	text-align: center;
+}
+.bottom {
+	overflow: auto;
+	background-color: #f08519;
+	width: auto;
+	height: auto;
+	font-weight: bold;
+	text-align: center;
+	padding: 12px;
+}
+button {
+  width: 40%;
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 22px 30px;
+  text-align: center;
+  font-size: 20pt;
+  font-weight: bold;
+  border: 1px solid #4CAF50;
+  margin-left: 10px;
+  cursor:none;
+}
+
+button:hover {
+  background-color: #fff;
+  color: #4CAF50;
+  border: 1px solid #4CAF50;
+}
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
