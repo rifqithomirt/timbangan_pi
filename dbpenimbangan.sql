@@ -1,15 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.3
+-- version 4.6.6deb4
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Dec 31, 2018 at 09:24 AM
--- Server version: 10.1.37-MariaDB
--- PHP Version: 7.2.12
+-- Host: localhost:3306
+-- Generation Time: Jan 02, 2019 at 09:34 PM
+-- Server version: 10.1.37-MariaDB-0+deb9u1
+-- PHP Version: 7.0.33-0+deb9u1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -65,8 +63,7 @@ CREATE TABLE `formula` (
 
 INSERT INTO `formula` (`nama_produk`, `nama_material`, `netto`, `no_timbangan`, `no_urut`, `idf`) VALUES
 ('Karet Gelang', 'Karet', 200, 1, 1, 1),
-('Karet Ban', 'Karet', 400, 2, 1, 2),
-('Karet Gelang', 'Lem', 50, 4, 2, 3);
+('Karet Ban', 'Karet', 400, 2, 1, 2);
 
 -- --------------------------------------------------------
 
@@ -91,11 +88,8 @@ CREATE TABLE `hasil` (
 --
 
 CREATE TABLE `status` (
-  `nama_produk_aktif` varchar(50) NOT NULL,
-  `nama_material_aktif` varchar(50) NOT NULL,
-  `netto_target` int(40) NOT NULL,
-  `no_timbangan_aktif` int(40) NOT NULL,
-  `no_urut` int(40) NOT NULL,
+  `Nama Produk Aktif` varchar(50) NOT NULL,
+  `No Urut` int(40) NOT NULL,
   `ids` int(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -103,8 +97,8 @@ CREATE TABLE `status` (
 -- Dumping data for table `status`
 --
 
-INSERT INTO `status` (`nama_produk_aktif`, `nama_material_aktif`, `netto_target`, `no_timbangan_aktif`, `no_urut`, `ids`) VALUES
-('Karet Gelang', 'Karet', 200, 1, 1, 1);
+INSERT INTO `status` (`Nama Produk Aktif`, `No Urut`, `ids`) VALUES
+('Karet Gelang', 1, 1);
 
 --
 -- Indexes for dumped tables
@@ -143,26 +137,21 @@ ALTER TABLE `status`
 --
 ALTER TABLE `data_user`
   MODIFY `idU` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
 --
 -- AUTO_INCREMENT for table `formula`
 --
 ALTER TABLE `formula`
-  MODIFY `idf` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
+  MODIFY `idf` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `hasil`
 --
 ALTER TABLE `hasil`
   MODIFY `idh` int(255) NOT NULL AUTO_INCREMENT;
-
 --
 -- AUTO_INCREMENT for table `status`
 --
 ALTER TABLE `status`
   MODIFY `ids` int(50) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-COMMIT;
-
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
