@@ -100,6 +100,7 @@ var states = [
 ];
 var flagReadyToWeight = false;
 var ID_DEVICE = 1;
+
 funRequest({tablename: 'formula'}, function( formula ){
 	var formulaByProductName = {};
 	formula.rows.forEach(function(e){
@@ -108,7 +109,9 @@ funRequest({tablename: 'formula'}, function( formula ){
 	funRequest({tablename:'status'}, function( status ){
 		var currentUrutanTimbang = status.rows[0]['No Urut'];
 		var currentNamaProduk = status.rows[0]['Nama Produk Aktif'];
+
 		if( (currentNamaProduk + "-" + currentUrutanTimbang) in formulaByProductName ) {
+
 			if( formulaByProductName[currentNamaProduk + "-" + currentUrutanTimbang]['no_timbangan'] == ID_DEVICE.toString() ) {
 				var currentProductName = formulaByProductName[currentNamaProduk + "-" + currentUrutanTimbang]['nama_produk']; 
 				var currentMaterialName = formulaByProductName[currentNamaProduk + "-" + currentUrutanTimbang]['nama_material'];
