@@ -70,27 +70,6 @@ window.onclick = function(event) {
 <script src="js/mqttws31.js"></script>
 <script src="js/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
-	var client = new Paho.MQTT.Client("127.0.0.1", 15675,"/ws", "clientId");
-	client.onConnectionLost = onConnectionLost;
-	client.onMessageArrived = onMessageArrived;
-	client.connect({onSuccess:onConnect});
-	function onConnect() {
-	  console.log("onConnect");
-	  client.subscribe("timbangan");
-	}
-
-	function onConnectionLost(responseObject) {
-	  if (responseObject.errorCode !== 0) {
-	    console.log("onConnectionLost:"+responseObject.errorMessage);
-	  }
-	}
-
-	function onMessageArrived(message) {
-	  console.log("onMessageArrived:"+message.payloadString);
-	  $('.weight-num-aktual').text(message.payloadString);
-	}
-</script>
-<script type="text/javascript">
 	var funRequest = function( option, callback ){
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
@@ -103,12 +82,14 @@ window.onclick = function(event) {
 	}
 </script>
 <script>
+var weightData = {};
 var currentState = 'idle';
 var states = [
 	'idle',
 	'wadah',
 	'tara',
-	'material'
+	'material',
+	'ambil'
 ];
 var flagReadyToWeight = false;
 var ID_DEVICE = 1;
@@ -126,6 +107,7 @@ funRequest({tablename: 'formula'}, function( formula ){
 				$('.top-materialName').text(formulaByProductName[currentNamaProduk + "-" + currentUrutanTimbang]['nama_material']);
 				$('.weight-num-target').text(formulaByProductName[currentNamaProduk + "-" + currentUrutanTimbang]['netto']);
 				flagReadyToWeight = true;
+				currentState = 'zero';
 			} else {
 				flagReadyToWeight = false;
 			}
@@ -136,15 +118,59 @@ funRequest({tablename: 'formula'}, function( formula ){
 });
 
 if( flagReadyToWeight ) {
-	main = function( onState ){
-		switch (onState) {
+	var valueTimbangan = $('.weight-num-aktual').text() * 1;
+	main = function( ){
+		switch (currentState) {
 			case 'idle':
+				$('.command-content').text('Idle');
+				break;
+			case 'zero':
+				$('.command-content').text('Tekan tombol Zero');
+				if( valueTimbangan == 0 ) {
+					currentState = 'wadah';
+				}
+				break;
 			case 'wadah':
+				$('.command-content').text('Taruh Wadah');
+				if( valueTimbangan > 0.1 ) {
+					currentState = 'Tara';
+				}
+				break;
 			case 'tara':
+				$('.command-content').text('Tekan Tara jika timbangan Stabil');
+				if( valueTimbangan > 0.1 ) {
+					weightData['Tara'] = valueTimbangan;
+				} else if( valueTimbangan == 0 &&  'tara' in weightData ) {
+					currentState = 'material';
+				}
+				break;
 			case 'material':
+				$('.command-content').text('Isi Material');
+				break;
 		} 
 	}
 }
+</script>
+<script type="text/javascript">
+	var client = new Paho.MQTT.Client("127.0.0.1", 15675,"/ws", "clientId");
+	client.onConnectionLost = onConnectionLost;
+	client.onMessageArrived = onMessageArrived;
+	client.connect({onSuccess:onConnect});
+	function onConnect() {
+	  console.log("onConnect");
+	  client.subscribe("timbangan");
+	}
+
+	function onConnectionLost(responseObject) {
+	  if (responseObject.errorCode !== 0) {
+	    console.log("onConnectionLost:"+responseObject.errorMessage);
+	  }
+	}
+	function onMessageArrived(message) {
+	  console.log("onMessageArrived:"+message.payloadString);
+	  $('.weight-num-aktual').text(message.payloadString);
+	  main();
+	}
 </script>
 </body>
 </html>
