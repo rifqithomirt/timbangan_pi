@@ -74,7 +74,8 @@ window.onclick = function(event) {
 		httpGet("api.php?tablename=" + option.tablename, callback);
 	}
 	var funInsertHasil = function(option, callback) {
-		httpGet();
+		var buildQuerystring = Object.keys(option).map(( objName ) => { return objName + '=' + option[objName]; }).join('&');
+		httpGet("insert.php?" + buildQuerystring, callback);
 	};
 	var httpGet = function(url, callback){
 		var xmlhttp = new XMLHttpRequest();
@@ -167,7 +168,19 @@ $('.myBtn').on('click', function(){
 	var targetTimbangan = $('.weight-num-target').text() * 1;
 	var toleransi = 0.1; //Kg
 	if( valueTimbangan <= (targetTimbangan + toleransi) && valueTimbangan >= (targetTimbangan - toleransi) ) {
-
+		var data = {
+			'nama_produk': weightData['nama_produk'],
+			'nama_material': weightData['nama_material'],
+			'netto': valueTimbangan,
+			'tara': weightData['Tara'],
+			'jam_timbang': new Date().toISOString(),
+			'No Timbangan': ID_DEVICE
+		};
+		localStorage.setItem('lastWeight', JSON.stringify(data));
+		funInsertHasil(data, function(){
+			alert('Sukses');
+			location.reload();
+		});
 	}
 });
 
