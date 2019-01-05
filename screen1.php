@@ -53,35 +53,49 @@ var btn = document.getElementById("myBtn");
 // Get the <span> element that closes the modal
 var span = document.getElementsByClassName("close")[0];
 // When the user clicks the button, open the modal 
-btn.onclick = function() {
-  modal.style.display = "block";
-}
+//btn.onclick = function() {
+//  modal.style.display = "block";
+//}
 // When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-  modal.style.display = "none";
-}
+//span.onclick = function() {
+//  modal.style.display = "none";
+//}
 // When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-}
+//window.onclick = function(event) {
+//  if (event.target == modal) {
+//    modal.style.display = "none";
+//  }
+//}
 </script>
 <script src="js/mqttws31.js"></script>
 <script src="js/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
-	var funRequest = function( option, callback ){
+	var funRequestGet = function( option, callback ){
+		httpGet("api.php?tablename=" + option.tablename, callback);
+	}
+	var funInsertHasil = function(option, callback) {
+		var buildQuerystring = Object.keys(option).map(( objName ) => { return objName + '=' + option[objName]; }).join('&');
+		console.log(encodeURIComponent(buildQuerystring) );
+		httpGet("insert.php?" + buildQuerystring, callback);
+	};
+	var funUpdateStatus = function(option, callback){
+		var buildQuerystring = Object.keys(option).map((objName) => { return objName + '=' + option[objName]; }).join('&');
+		httpGet("update.php?" + buildQuerystring, callback);
+	}
+	var httpGet = function(url, callback){
+		console.log(url);
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
 		  if (this.readyState == 4 && this.status == 200) {
-		    callback( JSON.parse(this.responseText) );	    
+		    callback( this.responseText );	    
 		  }
 		};
-		xmlhttp.open("GET", "api.php?tablename=" + option.tablename, true);
+		xmlhttp.open("GET", url, true);
 		xmlhttp.send();
 	}
 </script>
 <script>
+
 var weightData = {};
 var currentState = 'idle';
 var states = [
@@ -93,36 +107,50 @@ var states = [
 ];
 var flagReadyToWeight = false;
 var ID_DEVICE = 1;
-funRequest({tablename: 'formula'}, function( formula ){
-	var formulaByProductName = {};
-	formula.rows.forEach(function(e){
-		formulaByProductName[e.nama_produk + '-' + e.no_urut]=e;
-	});
-	funRequest({tablename:'status'}, function( status ){
-		var currentUrutanTimbang = status.rows[0]['No Urut'];
-		var currentNamaProduk = status.rows[0]['Nama Produk Aktif'];
-		if( (currentNamaProduk + "-" + currentUrutanTimbang) in formulaByProductName ) {
-			if( formulaByProductName[currentNamaProduk + "-" + currentUrutanTimbang]['no_timbangan'] == ID_DEVICE.toString() ) {
-				$('.top-nameBrand').text(formulaByProductName[currentNamaProduk + "-" + currentUrutanTimbang]['nama_produk']);
-				$('.top-materialName').text(formulaByProductName[currentNamaProduk + "-" + currentUrutanTimbang]['nama_material']);
-				$('.weight-num-target').text(formulaByProductName[currentNamaProduk + "-" + currentUrutanTimbang]['netto']);
-				flagReadyToWeight = true;
-				currentState = 'zero';
-			} else {
-				flagReadyToWeight = false;
-			}
-		} else {
-			flagReadyToWeight = false;
-		}
-	});
-});
-
-if( flagReadyToWeight ) {
+var loopCheck = function(){
+	if( flagReadyToWeight == false ) {
+		funRequestGet({tablename: 'formula'}, function(result) {
+			result = JSON.parse(result);
+			objFormulaGroupedByNamaProduk  = {};
+			result.rows.forEach(function( formula ){
+				objFormulaGroupedByNamaProduk[ formula.nama_produk + "-" + formula.no_urut ] = formula;
+			});
+			funRequestGet({tablename:'status'}, function( status ){
+				status = JSON.parse(status);
+				currentUrutanTimbang = status.rows[0]['no_urut'];
+				currentNamaProduk = status.rows[0]['nama_produk_aktif'];
+				if( (currentNamaProduk + "-" + currentUrutanTimbang) in objFormulaGroupedByNamaProduk ) {
+					if( objFormulaGroupedByNamaProduk[currentNamaProduk + "-" + currentUrutanTimbang]['no_timbangan'] == ID_DEVICE.toString() ) {
+						var currentProductName = objFormulaGroupedByNamaProduk[currentNamaProduk + "-" + currentUrutanTimbang]['nama_produk'];
+						var currentMaterialName = objFormulaGroupedByNamaProduk[currentNamaProduk + "-" + currentUrutanTimbang]['nama_material'];
+						var currentNettoTarget = objFormulaGroupedByNamaProduk[currentNamaProduk + "-" + currentUrutanTimbang]['netto'];
+						$('.top-nameBrand').text(currentNamaProduk);
+						$('.top-materialName').text(currentMaterialName);
+						$('.weight-num-target').text(currentNettoTarget);
+						flagReadyToWeight = true;
+						weightData['nama_produk'] = currentProductName;
+						weightData['nama_material'] = currentMaterialName;
+						currentState = 'zero';
+					} else {
+						location.reload();
+						flagReadyToWeight = false;
+					}			
+				} else {
+					flagReadyToWeight = false;
+				}
+			});
+		});
+	}
+};
+setInterval(loopCheck, 5000);
+main = function( ){
 	var valueTimbangan = $('.weight-num-aktual').text() * 1;
-	main = function( ){
+	if( flagReadyToWeight ) {
 		switch (currentState) {
 			case 'idle':
 				$('.command-content').text('Idle');
+				currentState = 'zero';
+				main();
 				break;
 			case 'zero':
 				$('.command-content').text('Tekan tombol Zero');
@@ -150,8 +178,38 @@ if( flagReadyToWeight ) {
 		} 
 	}
 }
+
+$('#myBtn').on('click', function(){
+	var valueTimbangan = 200.02;//$('.weight-num-aktual').text() * 1;
+	var targetTimbangan = $('.weight-num-target').text() * 1;
+	var toleransi = 0.1; //Kg
+	if( valueTimbangan <= (targetTimbangan + toleransi) && valueTimbangan >= (targetTimbangan - toleransi) ) {
+		var data = {
+			'nama_produk': weightData['nama_produk'],
+			'nama_material': weightData['nama_material'],
+			'netto': valueTimbangan,
+			'tara': weightData['Tara'] || 0.25,
+			'jam_timbang': new Date().toISOString(),
+			'no_timbangan': ID_DEVICE
+		};
+		//localStorage.setItem('lastWeight', JSON.stringify(data));
+		funInsertHasil(data, function( result ){
+			alert(result);
+			console.log(result=='Data Berhasil Disimpan', result);
+			if (result=='Data Berhasil Disimpan ') {
+				funUpdateStatus({no_urut:(currentUrutanTimbang * 1) + 1, nama_produk_aktif: currentNamaProduk}, function(result){alert(result); });
+				flagReadyToWeight = false;
+			}
+		});
+		
+	} else {
+		alert('Selisih dengan Target' );
+	}
+});
+
 </script>
 <script type="text/javascript">
+	/*
 	var client = new Paho.MQTT.Client("127.0.0.1", 15675,"/ws", "clientId");
 	client.onConnectionLost = onConnectionLost;
 	client.onMessageArrived = onMessageArrived;
@@ -170,7 +228,7 @@ if( flagReadyToWeight ) {
 	  console.log("onMessageArrived:"+message.payloadString);
 	  $('.weight-num-aktual').text(message.payloadString);
 	  main();
-	}
+	}*/
 </script>
 </body>
 </html>
